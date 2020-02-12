@@ -24,6 +24,8 @@ import:
 - package: k8s.io/apimachinery
   version: origin-4.1-kubernetes-1.13.4
   repo: https://github.com/openshift/kubernetes-apimachinery.git
+  subpackages:
+  - pkg/apis/meta/v1
 - package: k8s.io/api
   version: origin-4.1-kubernetes-1.13.4
   repo: https://github.com/openshift/kubernetes-api.git
@@ -68,3 +70,7 @@ import:
   version: v1.2.2
 - package: github.com/xeipuuv/gojsonschema
   version: v1.2.0
+- package: github.com/tektoncd/triggers
+  version: v0.2.1
+  subpackages:
+  - pkg/apis/triggers/v1alpha1
