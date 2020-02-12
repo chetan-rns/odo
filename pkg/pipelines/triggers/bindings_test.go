@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
-	pipelinev2 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha2"
+	pipelinev1 "github.com/tektoncd/pipeline/pkg/apis/pipeline/v1alpha1"
 	triggersv1 "github.com/tektoncd/triggers/pkg/apis/triggers/v1alpha1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
@@ -19,16 +19,16 @@ func TestCreateDevCDDeployBinding(t *testing.T) {
 			Name: "dev-cd-deploy-from-master-binding",
 		},
 		Spec: triggersv1.TriggerBindingSpec{
-			Params: []pipelinev2.Param{
-				pipelinev2.Param{
+			Params: []pipelinev1.Param{
+				pipelinev1.Param{
 					Name: "gitref",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.head_commit.id)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitrepositoryurl",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.repository.clone_url)",
 					},
 				},
@@ -37,7 +37,7 @@ func TestCreateDevCDDeployBinding(t *testing.T) {
 	}
 	binding := createDevCDDeployBinding()
 	if diff := cmp.Diff(validDevCDBinding, binding); diff != "" {
-		t.Errorf("createDevCDDeployBinding() failed:\n%s", diff)
+		t.Fatalf("createDevCDDeployBinding() failed:\n%s", diff)
 	}
 }
 
@@ -51,28 +51,28 @@ func TestCreateDevCIBuildBinding(t *testing.T) {
 			Name: "dev-ci-build-from-pr-binding",
 		},
 		Spec: triggersv1.TriggerBindingSpec{
-			Params: []pipelinev2.Param{
-				pipelinev2.Param{
+			Params: []pipelinev1.Param{
+				pipelinev1.Param{
 					Name: "gitref",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.pull_request.head.ref)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitsha",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.pull_request.head.sha)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitrepositoryurl",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.repository.clone_url)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "fullname",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.repository.full_name)",
 					},
 				},
@@ -81,7 +81,7 @@ func TestCreateDevCIBuildBinding(t *testing.T) {
 	}
 	binding := createDevCIBuildBinding()
 	if diff := cmp.Diff(validDevCIBinding, binding); diff != "" {
-		t.Errorf("createDevCIBuildBinding() failed:\n%s", diff)
+		t.Fatalf("createDevCIBuildBinding() failed:\n%s", diff)
 	}
 }
 
@@ -95,22 +95,22 @@ func TestCreateStageCDDeployBinding(t *testing.T) {
 			Name: "stage-cd-deploy-from-push-binding",
 		},
 		Spec: triggersv1.TriggerBindingSpec{
-			Params: []pipelinev2.Param{
-				pipelinev2.Param{
+			Params: []pipelinev1.Param{
+				pipelinev1.Param{
 					Name: "gitref",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.ref)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitsha",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.commits.0.id)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitrepositoryurl",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.repository.clone_url)",
 					},
 				},
@@ -119,7 +119,7 @@ func TestCreateStageCDDeployBinding(t *testing.T) {
 	}
 	binding := createStageCDDeployBinding()
 	if diff := cmp.Diff(validStageCDDeployBinding, binding); diff != "" {
-		t.Errorf("createDevCIBuildBinding() failed:\n%s", diff)
+		t.Fatalf("createDevCIBuildBinding() failed:\n%s", diff)
 	}
 }
 
@@ -133,16 +133,16 @@ func TestCreateStageCIDryRunBinding(t *testing.T) {
 			Name: "stage-ci-dryrun-from-pr-binding",
 		},
 		Spec: triggersv1.TriggerBindingSpec{
-			Params: []pipelinev2.Param{
-				pipelinev2.Param{
+			Params: []pipelinev1.Param{
+				pipelinev1.Param{
 					Name: "gitref",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.pull_request.head.ref)",
 					},
 				},
-				pipelinev2.Param{
+				pipelinev1.Param{
 					Name: "gitrepositoryurl",
-					Value: pipelinev2.ArrayOrString{
+					Value: pipelinev1.ArrayOrString{
 						StringVal: "$(body.repository.clone_url)",
 					},
 				},
@@ -152,5 +152,18 @@ func TestCreateStageCIDryRunBinding(t *testing.T) {
 	binding := createStageCIDryRunBinding()
 	if diff := cmp.Diff(validStageCIDryRunBinding, binding); diff != "" {
 		t.Errorf("createStageCIDryRunBinding() failed:\n%s", diff)
+	}
+}
+
+func TestCreateBindingParam(t *testing.T) {
+	validParam := pipelinev1.Param{
+		Name: "gitref",
+		Value: pipelinev1.ArrayOrString{
+			StringVal: "$(body.ref)",
+		},
+	}
+	bindingParam := createBindingParam("gitref", "$(body.ref)")
+	if diff := cmp.Diff(validParam, bindingParam); diff != "" {
+		t.Fatalf("createBindingParam() failed\n%s", diff)
 	}
 }
