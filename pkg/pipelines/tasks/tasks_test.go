@@ -176,3 +176,30 @@ func TestDeployFromSourceTask(t *testing.T) {
 		t.Fatalf("GenerateDeployFromSourceTask() failed \n%s", diff)
 	}
 }
+
+func TestStringParamSpec(t *testing.T) {
+	validStringParamSpec := pipelinev1.ParamSpec{
+		Name:        "sample",
+		Type:        pipelinev1.ParamTypeString,
+		Description: "sample",
+	}
+	stringParamSpec := createStringParamSpec("sample", "sample")
+	if diff := cmp.Diff(validStringParamSpec, stringParamSpec); diff != "" {
+		t.Fatalf("createStringParamSpec() failed:\n%s", diff)
+	}
+}
+
+func TestStringParamSpecWithDefault(t *testing.T) {
+	validStringParamSpecWithDefault := pipelinev1.ParamSpec{
+		Name:        "sampleName",
+		Type:        pipelinev1.ParamTypeString,
+		Description: "sampleDescription",
+		Default: &pipelinev1.ArrayOrString{
+			StringVal: "sampleDefault",
+		},
+	}
+	stringParamSpecWithDefault := createStringParamSpecWithDefault("sampleName", "sampleDescription", "sampleDefault")
+	if diff := cmp.Diff(validStringParamSpecWithDefault, stringParamSpecWithDefault); diff != "" {
+		t.Fatalf("createStringParamSpecWithDefault() failed:\n%s", diff)
+	}
+}

@@ -52,27 +52,20 @@ func createInputsForDeployFromSourceTask() *pipelinev1.Inputs {
 			createTaskResource("source", "git"),
 		},
 		Params: []pipelinev1.ParamSpec{
-			pipelinev1.ParamSpec{
-				Name:        "PATHTODEPLOYMENT",
-				Description: "Path to the manifest to apply",
-				Type:        pipelinev1.ParamTypeString,
-				Default: &pipelinev1.ArrayOrString{
-					StringVal: "deploy",
-				},
-			},
-			pipelinev1.ParamSpec{
-				Name:        "NAMESPACE",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "Namespace to deploy into",
-			},
-			pipelinev1.ParamSpec{
-				Name:        "DRYRUN",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "If true run a server-side dryrun.",
-				Default: &pipelinev1.ArrayOrString{
-					StringVal: "false",
-				},
-			},
+			createStringParamSpecWithDefault(
+				"PATHTODEPLOYMENT",
+				"Path to the manifest to apply",
+				"deploy",
+			),
+			createStringParamSpec(
+				"NAMESPACE",
+				"Namespace to deploy into",
+			),
+			createStringParamSpecWithDefault(
+				"DRYRUN",
+				"If true run a server-side dryrun.",
+				"false",
+			),
 		},
 	}
 }

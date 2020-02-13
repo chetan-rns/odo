@@ -59,40 +59,51 @@ func createStepsForGithubStatusTask() []pipelinev1.Step {
 func createInputsForGithubStatusTask() *pipelinev1.Inputs {
 	inputs := pipelinev1.Inputs{
 		Params: []pipelinev1.ParamSpec{
-			pipelinev1.ParamSpec{
-				Name:        "REPO",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "The repo to publish the status update for e.g. tektoncd/triggers",
-			},
-			pipelinev1.ParamSpec{
-				Name:        "COMMIT_SHA",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "The specific commit to report a status for.",
-			},
-			pipelinev1.ParamSpec{
-				Name:        "STATE",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "The state to report error, failure, pending, or success.",
-			},
-			pipelinev1.ParamSpec{
-				Name:        "TARGET_URL",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "The target URL to associate with this status.",
-				Default: &pipelinev1.ArrayOrString{
-					StringVal: "",
-				},
-			},
-			pipelinev1.ParamSpec{
-				Name:        "DESCRIPTION",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "A short description of the status.",
-			},
-			pipelinev1.ParamSpec{
-				Name:        "CONTEXT",
-				Type:        pipelinev1.ParamTypeString,
-				Description: "A string label to differentiate this status from the status of other systems.",
-			},
+			createStringParamSpec(
+				"REPO",
+				"The repo to publish the status update for e.g. tektoncd/triggers",
+			),
+			createStringParamSpec(
+				"COMMIT_SHA",
+				"The specific commit to report a status for.",
+			),
+			createStringParamSpec(
+				"STATE",
+				"The state to report error, failure, pending, or success.",
+			),
+			createStringParamSpecWithDefault(
+				"TARGET_URL",
+				"The target URL to associate with this status.",
+				"",
+			),
+			createStringParamSpec(
+				"DESCRIPTION",
+				"A short description of the status.",
+			),
+			createStringParamSpec(
+				"CONTEXT",
+				"A string label to differentiate this status from the status of other systems.",
+			),
 		},
 	}
 	return &inputs
+}
+
+func createStringParamSpec(name string, description string) pipelinev1.ParamSpec {
+	return pipelinev1.ParamSpec{
+		Name:        name,
+		Description: description,
+		Type:        pipelinev1.ParamTypeString,
+	}
+}
+
+func createStringParamSpecWithDefault(name string, description string, paramDefault string) pipelinev1.ParamSpec {
+	return pipelinev1.ParamSpec{
+		Name:        name,
+		Description: description,
+		Type:        pipelinev1.ParamTypeString,
+		Default: &pipelinev1.ArrayOrString{
+			StringVal: paramDefault,
+		},
+	}
 }
