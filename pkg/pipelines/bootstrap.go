@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	corev1 "k8s.io/api/core/v1"
 	v1rbac "k8s.io/api/rbac/v1"
@@ -57,6 +58,11 @@ func Bootstrap(o *BootstrapOptions) error {
 	}
 	if !installed {
 		return errors.New("failed due to Tekton Pipelines or Triggers are not installed")
+	}
+
+	// Validate image repository
+	if isValid, err := validateImageRepo(o.ImageRepo); !isValid {
+		return err
 	}
 
 	outputs := make([]interface{}, 0)
@@ -144,4 +150,17 @@ func marshalOutputs(out io.Writer, outputs []interface{}) error {
 		}
 	}
 	return nil
+}
+
+func validateImageRepo(url string) (bool, error) {
+	urlComponents := strings.Split(url, "/")
+	if len(urlComponents) < 3 {
+		return false, fmt.Errorf("failed to parse image repo:%s, expected image repository in the form <registry>/<username>/<repository>", url)
+	}
+	for _, v := range urlComponents {
+		if strings.TrimSpace(v) == "" {
+			return false, fmt.Errorf("failed to parse image repo:%s, expected image repository in the form <registry>/<username>/<repository>", url)
+		}
+	}
+	return true, nil
 }
