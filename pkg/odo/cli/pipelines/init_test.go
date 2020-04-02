@@ -40,27 +40,57 @@ func TestCompleteInitParameters(t *testing.T) {
 }
 
 func TestValidateInitParameters(t *testing.T) {
-	optionTests := []struct {
-		name    string
-		gitRepo string
-		errMsg  string
+	tests := []struct {
+		description string
+		initCmd     InitParameters
+		errMsg      string
 	}{
-		{"invalid repo", "test", "repo must be org/repo"},
-		{"valid repo", "test/repo", ""},
+		{
+			"invalid gitops repo",
+			InitParameters{gitOpsRepo: "org_gitops", gitOpsWebhookSecret: "123"},
+			"repo must be org/repo: org_gitops",
+		},
+		{
+			"valid gitops repo",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123"},
+			"",
+		},
+		{
+			"invalid app repo",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appGitRepo: "org_app"},
+			"repo must be org/repo: org_app",
+		},
+		{
+			"valid app repo",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appGitRepo: "org/app"},
+			"",
+		},
+		{
+			"app-webhook-secret is required to initialize application",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appGitRepo: "org/app"},
+			missingParameterError("app-webhook-secret").Error(),
+		},
+		{
+			"app-image-repo is required to initialize application",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appGitRepo: "org/app", appWebhookSecret: "123"},
+			missingParameterError("app-image-repo").Error(),
+		},
+		{
+			"env name is required to initialize application",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appGitRepo: "org/app", appWebhookSecret: "123", appImageRepo: "registry/image"},
+			missingParameterError("env-name").Error(),
+		},
+		{
+			"app-github-repo is required to initialize application",
+			InitParameters{gitOpsRepo: "org/gitops", gitOpsWebhookSecret: "123", appWebhookSecret: "123", appImageRepo: "registry/image"},
+			missingParameterError("app-git-repo").Error(),
+		},
 	}
+	for _, tt := range tests {
 
-	for _, tt := range optionTests {
-		o := InitParameters{gitOpsRepo: tt.gitRepo, prefix: "test"}
-
-		err := o.Validate()
-
-		if err != nil && tt.errMsg == "" {
-			t.Errorf("Validate() %#v got an unexpected error: %s", tt.name, err)
-			continue
-		}
-
+		err := tt.initCmd.Validate()
 		if !matchError(t, tt.errMsg, err) {
-			t.Errorf("Validate() %#v failed to match error: got %s, want %s", tt.name, err, tt.errMsg)
+			t.Errorf("Validate() %#v failed to match error: got %s, want %s", tt.description, err, tt.errMsg)
 		}
 	}
 }

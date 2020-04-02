@@ -20,11 +20,17 @@ import (
 
 // InitParameters is a struct that provides flags for initialise command
 type InitParameters struct {
-	GitOpsRepo          string
-	GitOpsWebhookSecret string
-	Output              string
-	Prefix              string
-	SkipChecks          bool
+	GitOpsRepo               string
+	GitOpsWebhookSecret      string
+	Output                   string
+	Prefix                   string
+	SkipChecks               bool
+	AppGitRepo               string
+	AppWebhookSecret         string
+	AppImageRepo             string
+	InternalRegistryHostname string
+	EnvName                  string
+	DockerConfigJSON         string
 }
 
 // PolicyRules to be bound to service account
